@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { Box, Button, Stack, TextField, Typography } from "@mui/material";
-import { fetchData, exercisesOptions } from "../utils/fetchData";
-import HorizontalScrollbar from "../components/HorizontalScrollbar";
+
+import { exerciseOptions, fetchData } from "../utils/fetchData";
+import HorizontalScrollbar from "./HorizontalScrollbar";
 
 const SearchExercises = ({ setExercises, bodyPart, setBodyPart }) => {
   const [search, setSearch] = useState("");
@@ -11,31 +12,34 @@ const SearchExercises = ({ setExercises, bodyPart, setBodyPart }) => {
     const fetchExercisesData = async () => {
       const bodyPartsData = await fetchData(
         "https://exercisedb.p.rapidapi.com/exercises/bodyPartList",
-        exercisesOptions
+        exerciseOptions
       );
+
       setBodyParts(["all", ...bodyPartsData]);
     };
 
     fetchExercisesData();
   }, []);
 
-  const onHandleSearch = async () => {
+  const handleSearch = async () => {
     if (search) {
       const exercisesData = await fetchData(
         "https://exercisedb.p.rapidapi.com/exercises",
-        exercisesOptions
+        exerciseOptions
       );
 
-      const searchExercises = exercisesData.filter(
-        (ex) =>
-          ex.name.toLowerCase().includes(search) ||
-          ex.target.toLowerCase().includes(search) ||
-          ex.equipment.toLowerCase().includes(search) ||
-          ex.bodyPart.toLowerCase().includes(search)
+      const searchedExercises = exercisesData.filter(
+        (item) =>
+          item.name.toLowerCase().includes(search) ||
+          item.target.toLowerCase().includes(search) ||
+          item.equipment.toLowerCase().includes(search) ||
+          item.bodyPart.toLowerCase().includes(search)
       );
+
+      window.scrollTo({ top: 1800, left: 100, behavior: "smooth" });
 
       setSearch("");
-      setExercises(searchExercises);
+      setExercises(searchedExercises);
     }
   };
 
@@ -44,25 +48,20 @@ const SearchExercises = ({ setExercises, bodyPart, setBodyPart }) => {
       <Typography
         fontWeight={700}
         sx={{ fontSize: { lg: "44px", xs: "30px" } }}
-        mb="50px"
+        mb="49px"
         textAlign="center"
       >
-        Awesome Exercises You <br />
-        Should Know
+        Awesome Exercises You <br /> Should Know
       </Typography>
       <Box position="relative" mb="72px">
         <TextField
+          height="76px"
           sx={{
-            input: {
-              fontWeight: "700",
-              border: "none",
-              borderRadius: "4px",
-            },
-            width: { lg: "800px", xs: "350px" },
+            input: { fontWeight: "700", border: "none", borderRadius: "4px" },
+            width: { lg: "1170px", xs: "350px" },
             backgroundColor: "#fff",
             borderRadius: "40px",
           }}
-          height="76px"
           value={search}
           onChange={(e) => setSearch(e.target.value.toLowerCase())}
           placeholder="Search Exercises"
@@ -80,7 +79,7 @@ const SearchExercises = ({ setExercises, bodyPart, setBodyPart }) => {
             right: "0px",
             fontSize: { lg: "20px", xs: "14px" },
           }}
-          onClick={onHandleSearch}
+          onClick={handleSearch}
         >
           Search
         </Button>
@@ -89,8 +88,8 @@ const SearchExercises = ({ setExercises, bodyPart, setBodyPart }) => {
         <HorizontalScrollbar
           data={bodyParts}
           bodyParts
-          bodyPart={bodyPart}
           setBodyPart={setBodyPart}
+          bodyPart={bodyPart}
         />
       </Box>
     </Stack>
